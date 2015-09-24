@@ -72,7 +72,7 @@ function plugin_sccm_check_config($verbose=false) {
       echo "cURL extension (PHP) is required.";
       return false;
    }
-   if (!function_exists('mssql_connect')) {
+   if (!function_exists('sqlsrv_connect')) {
       echo "MsSQL extension (PHP) is required.";
       return false;
    }

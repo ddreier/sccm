@@ -140,6 +140,7 @@ XML;
       $BIOS->addChild('SSN'            ,$this->data['PBD-SerialNumber']);
 
       // Jul 17 2012 12:00:00:000AM
+      print_r($this->data['PBD-ReleaseDate']);
       $Date_Sccm = DateTime::createFromFormat('M d Y', 
             substr($this->data['PBD-ReleaseDate'],0,12));
 

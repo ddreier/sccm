@@ -39,6 +39,7 @@ class PluginSccmSccmdb {
    var $dbconn;
 
    function connect() {
+      //Toolbox::logInFile('sccm', "PluginSccmSccmdb->connect called \n", true);
 
       $PluginSccmConfig = new PluginSccmConfig();
          $PluginSccmConfig->getFromDB(1);
@@ -49,23 +50,26 @@ class PluginSccmSccmdb {
 
       $password = $PluginSccmConfig->getField('sccmdb_password');
       $password = Toolbox::decrypt($password, GLPIKEY);
+      
+      $connInfo = array('Database' => $dbname, 'UID' => $user, 'PWD' => $password );
 
-      $this->dbconn = mssql_connect($host,$user,$password)
-                        or die('Connection error : ' . mssql_get_last_message());
+      $this->dbconn = sqlsrv_connect($host, $connInfo)
+                        or die('Connection error : ' . print_r( sqlsrv_errors(), true));
 
-      if (!mssql_select_db($dbname, $this->dbconn)) {
+      /*if (!mssql_select_db($dbname, $this->dbconn)) {
          die('Unable to connect do DB!' . mssql_get_last_message());
-      }
+      }*/
 
+      //Toolbox::logInFile('sccm', "SQL connection successful \n", true);
       return true;
    }
 
    function disconnect() {
-      mssql_close($this->dbconn);
+      sqlsrv_close($this->dbconn);
    }
 
    function exec_query($query) {
-      $result = mssql_query($query) or die('Query error : ' . mssql_get_last_message());
+      $result = sqlsrv_query($this->dbconn, $query) or die('Query error : ' . print_r( sqlsrv_errors(), true));
       return $result;
    }
 
