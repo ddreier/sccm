@@ -117,9 +117,7 @@ XML;
    }
 
    function setOS() {
-      $versionOS = $this->data['OSD-CSDVersion'] 
-                  . "." . $this->data['OSD-Version'] 
-                  . "." . $this->data['OSD-BuildNumber'];
+      $versionOS = $this->data['OSD-Version'];
 
       $HARDWARE = $this->sxml->CONTENT[0]->HARDWARE;
       $HARDWARE->addChild('OSNAME'     ,$this->data['OSD-Caption']);
@@ -162,19 +160,40 @@ XML;
 
       $CONTENT    = $this->sxml->CONTENT[0]; $i = 0;
       foreach($PluginSccmSccm->getDatas('processors', $this->device_id) as $value){
-         if(!in_array($value['CPUKey00'], $cpukeys)) {
+         if(!in_array($value['CPUKey0'], $cpukeys)) {
             $CONTENT->addChild('CPUS');
             $CPUS = $this->sxml->CONTENT[0]->CPUS[$i];
-            $CPUS->addChild('DESCRIPTION'    ,$value['Name00']);
-            $CPUS->addChild('MANUFACTURER'      ,$value['Manufacturer00']);
-            $CPUS->addChild('NAME'           ,$value['Name00']);
-            $CPUS->addChild('SPEED'          ,$value['NormSpeed00']);
-            $CPUS->addChild('TYPE'           ,$value['AddressWidth00']);
+            $CPUS->addChild('DESCRIPTION'    ,$value['Name0']);
+            $CPUS->addChild('MANUFACTURER'      ,$value['Manufacturer0']);
+            $CPUS->addChild('NAME'           ,$value['Name0']);
+            $CPUS->addChild('SPEED'          ,$value['NormSpeed0']);
+            $CPUS->addChild('TYPE'           ,$value['AddressWidth0']);
             $i++; 
 
             // save actual cpukeys for duplicity
-            $cpukeys[] = $value['CPUKey00'];
+            $cpukeys[] = $value['CPUKey0'];
          }
+      }
+   }
+   
+   function setMemory() {
+      //CAPACITY=Capacity0, CAPTION=DeviceLocator0, DESCRIPTION=PartNumber0, MANUFACTURER=Manufacturer0, NUMSLOTS=GroupID, SERIALNUMBER=SerialNumber0, SPEED=Speed0, TYPE=MemoryType0
+      
+      $PluginSccmSccm = new PluginSccmSccm();
+
+      $CONTENT    = $this->sxml->CONTENT[0]; $i = 0;
+      foreach($PluginSccmSccm->getDatas('memory', $this->device_id) as $value){
+         $CONTENT->addChild('MEMORIES');
+         $MEM = $this->sxml->CONTENT[0]->MEMORIES[$i];
+         $MEM->addChild('CAPACITY',     $value['Capacity0']);
+         $MEM->addChild('CAPTION',      $value['DeviceLocator0']);
+         $MEM->addChild('DESCRIPTION',  $value['PartNumber0']);
+         $MEM->addChild('MANUFACTURER', $value['Manufacturer0']);
+         $MEM->addChild('NUMSLOTS',     $value['GroupID']);
+         $MEM->addChild('SERIALNUMBER', $value['SerialNumber0']);
+         $MEM->addChild('SPEED',        $value['Speed0']);
+         $MEM->addChild('TYPE',         $value['MemoryType0']);
+         $i++;
       }
    }
 
@@ -271,16 +290,16 @@ XML;
       $PluginSccmSccm = new PluginSccmSccm();
 
       $CONTENT    = $this->sxml->CONTENT[0]; $i = 0;
-      foreach($PluginSccmSccm->getDatas('drives', $this->device_id) as $value){
+      foreach($PluginSccmSccm->getLogicalDisks($this->device_id) as $value){
          $CONTENT->addChild('DRIVES');
          $DRIVES = $this->sxml->CONTENT[0]->DRIVES[$i];
-         $DRIVES->addChild('DESCRIPTION'     ,$value['Description00']);
-         //$DRIVES->addChild('FILESYSTEM'    ,$value['attr_14807']);
-         //$DRIVES->addChild('FREE'       ,$value['attr_14805']);
-         $DRIVES->addChild('LABEL'        ,$value['Caption00']);
-         //$DRIVES->addChild('LETTER'        ,$value['name']);
-         $DRIVES->addChild('TYPE'         ,$value['InterfaceType00']);
-         $DRIVES->addChild('TOTAL'        ,$value['Size00']);
+         $DRIVES->addChild('DESCRIPTION'     ,$value['Description0']);
+         $DRIVES->addChild('FILESYSTEM'    ,$value['FileSystem0']);
+         $DRIVES->addChild('FREE'       ,$value['FreeSpace0']);
+         $DRIVES->addChild('LABEL'        ,$value['VolumeName0']);
+         $DRIVES->addChild('LETTER'        ,$value['DeviceID0']);
+         //$DRIVES->addChild('TYPE'         ,$value['InterfaceType0']);
+         $DRIVES->addChild('TOTAL'        ,$value['Size0']);
          $i++;
       }
    }

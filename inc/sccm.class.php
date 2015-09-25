@@ -121,21 +121,44 @@ class PluginSccmSccm {
       $datas = array();
       
       switch($type){
-         case 'drives':
-            $fields = array('Caption00','Description00','DeviceID00','InterfaceType00',
-                              'Manufacturer00','Model00','Name00','Size00');
-            $table = 'Disk_DATA';
-         break;
          case 'processors' :
-            $fields = array('Manufacturer00','Name00','NormSpeed00','AddressWidth00','CPUKey00');
-            $table = 'Processor_DATA';
+            $fields = array('Manufacturer0','Name0','NormSpeed0','AddressWidth0','CPUKey0');
+            $table = 'v_GS_PROCESSOR';
          break;
+         case 'memory' :
+            $fields= array('Capacity0', 'DeviceLocator0', 'PartNumber0', 'Manufacturer0', 'GroupID', 'SerialNumber0', 'Speed0');
+            $table = 'v_GS_PHYSICAL_MEMORY';
+         break;            
       }
       
       $query = "SELECT ".implode(',',$fields)."\n";
       $query.= " FROM ".$table."\n";
-      $query.= " WHERE MachineID = '".$deviceid."'"."\n";
+      $query.= " WHERE ResourceID = '".$deviceid."'"."\n";
 
+      $result = $PluginSccmSccmdb->exec_query($query);
+      while($data = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+         foreach($data as $key => $value){
+            $data[$key] = $this->cleanValue($value);
+         }
+         $datas[]=$data;
+      }
+
+      $PluginSccmSccmdb->disconnect();
+
+      return $datas;
+   }
+   
+   function getLogicalDisks($deviceid) {
+      
+      $PluginSccmSccmdb = new PluginSccmSccmdb();
+      $PluginSccmSccmdb->connect();
+
+      $datas = array();
+      
+      $query = "SELECT Description0, DeviceID0, FileSystem0, FreeSpace0, Size0, VolumeName0";
+      $query.= " FROM v_GS_LOGICAL_DISK";
+      $query.= " WHERE ResourceID = '". $deviceid ."'";
+      
       $result = $PluginSccmSccmdb->exec_query($query);
       while($data = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
          foreach($data as $key => $value){
@@ -265,6 +288,7 @@ class PluginSccmSccm {
             $PluginSccmSccmxml->setOS();
             $PluginSccmSccmxml->setBios();
             $PluginSccmSccmxml->setProcessors();
+            $PluginSccmSccmxml->setMemory();
             //$PluginSccmSccmxml->setSoftwares();
             $PluginSccmSccmxml->setUsers();
             $PluginSccmSccmxml->setNetworks();
