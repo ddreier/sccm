@@ -188,11 +188,11 @@ XML;
          $MEM->addChild('CAPACITY',     $value['Capacity0']);
          $MEM->addChild('CAPTION',      $value['DeviceLocator0']);
          $MEM->addChild('DESCRIPTION',  $value['PartNumber0']);
-         $MEM->addChild('MANUFACTURER', $value['Manufacturer0']);
+         $MEM->addChild('MANUFACTURER', "Corsair");
          $MEM->addChild('NUMSLOTS',     $value['GroupID']);
          $MEM->addChild('SERIALNUMBER', $value['SerialNumber0']);
          $MEM->addChild('SPEED',        $value['Speed0']);
-         $MEM->addChild('TYPE',         $value['MemoryType0']);
+         //$MEM->addChild('TYPE',         $value['MemoryType0']);
          $i++;
       }
    }
@@ -273,13 +273,13 @@ XML;
             $CONTENT->addChild('NETWORKS');
             $NETWORKS = $this->sxml->CONTENT[0]->NETWORKS[$i];
 
-            $NETWORKS->addChild('IPADDRESS'     ,$value['ND-IpAddress']);
-            $NETWORKS->addChild('DESCRIPTION'   ,$value['ND-Name']);
-            $NETWORKS->addChild('IPMASK'     ,$value['ND-IpSubnet']);
-            $NETWORKS->addChild('IPDHCP'     ,$value['ND-DHCPServer']);
-            $NETWORKS->addChild('IPGATEWAY'     ,$value['ND-IpGateway']);
-            $NETWORKS->addChild('MACADDR'       ,$value['ND-MacAddress']);
-            $NETWORKS->addChild('DOMAIN'        ,$value['ND-DomainName']);
+            $NETWORKS->addChild('IPADDRESS',   $value['ND-IpAddress']);
+            $NETWORKS->addChild('DESCRIPTION', $value['ND-Name']);
+            $NETWORKS->addChild('IPMASK',      $value['ND-IpSubnet']);
+            $NETWORKS->addChild('IPDHCP',      $value['ND-DHCPServer']);
+            $NETWORKS->addChild('IPGATEWAY',   $value['ND-IpGateway']);
+            $NETWORKS->addChild('MACADDR',     $value['ND-MacAddress']);
+            $NETWORKS->addChild('DOMAIN',      $value['ND-DomainName']);
 
             $i++;
          }
@@ -293,13 +293,33 @@ XML;
       foreach($PluginSccmSccm->getLogicalDisks($this->device_id) as $value){
          $CONTENT->addChild('DRIVES');
          $DRIVES = $this->sxml->CONTENT[0]->DRIVES[$i];
-         $DRIVES->addChild('DESCRIPTION'     ,$value['Description0']);
-         $DRIVES->addChild('FILESYSTEM'    ,$value['FileSystem0']);
-         $DRIVES->addChild('FREE'       ,$value['FreeSpace0']);
-         $DRIVES->addChild('LABEL'        ,$value['VolumeName0']);
-         $DRIVES->addChild('LETTER'        ,$value['DeviceID0']);
-         //$DRIVES->addChild('TYPE'         ,$value['InterfaceType0']);
-         $DRIVES->addChild('TOTAL'        ,$value['Size0']);
+         $DRIVES->addChild('DESCRIPTION', $value['Description0']);
+         $DRIVES->addChild('FILESYSTEM',  $value['FileSystem0']);
+         $DRIVES->addChild('FREE',        $value['FreeSpace0']);
+         $DRIVES->addChild('LABEL',       $value['VolumeName0']);
+         $DRIVES->addChild('LETTER',      $value['DeviceID0']);
+         $DRIVES->addChild('TOTAL',       $value['Size0']);
+         $i++;
+      }
+   }
+   
+   function setPhysicalDisks() {
+      $PluginSccmSccm = new PluginSccmSccm();
+
+      $CONTENT    = $this->sxml->CONTENT[0]; $i = 0;
+      foreach($PluginSccmSccm->getLogicalDisks($this->device_id) as $value){
+         $CONTENT->addChild('STORAGES');
+         $STORAGES = $this->sxml->CONTENT[0]->STORAGES[$i];
+         $STORAGES->addChild('DESCRIPTION',  $value['Description0']);
+         $STORAGES->addChild('DISKSIZE',     $value['Size0']);
+         $STORAGES->addChild('INTERFACE',    $value['InterfaceType0']);
+         $STORAGES->addChild('MANUFACTURER', $value['Manufacturer0']);
+         $STORAGES->addChild('MODEL',        $value['Model0']);
+         $STORAGES->addChild('NAME',         $value['Name0']);
+         $STORAGES->addChild('SCSI_COID',    $value['SCSIBus0']);
+         $STORAGES->addChild('SCSI_LUN',     $value['SCSILogicalUnit0']);
+         $STORAGES->addChild('SCSI_UNID',    $value['SCSITargetId0']);
+         $STORAGES->addChild('TYPE',         $value['MediaType0']);
          $i++;
       }
    }

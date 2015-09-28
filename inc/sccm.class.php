@@ -128,13 +128,42 @@ class PluginSccmSccm {
          case 'memory' :
             $fields= array('Capacity0', 'DeviceLocator0', 'PartNumber0', 'Manufacturer0', 'GroupID', 'SerialNumber0', 'Speed0');
             $table = 'v_GS_PHYSICAL_MEMORY';
-         break;            
+         break;
+         case 'disks' :
+         //DESCRIPTION=Description0,DISKSIZE=Size0,INTERFACE=InterfaceType0,MANUFACTURER=Manufacturer0,MODEL=Model0,NAME=Name0,SCSI_COID=SCSIBus0,SCSI_LUN=SCSILogicalUnit0,SCSI_UNID=SCSITargetId0,TYPE=MediaType0
+            $fields = array('Description0', 'Size0', 'InterfaceType0', 'Manufacturer0', 'Model0', 'Name0', 'SCSIBus0', 'SCSILogicalUnit0', 'SCSITargetId0', 'MediaType0');
+            $table = 'v_GS_DISK';
+         break;
       }
       
       $query = "SELECT ".implode(',',$fields)."\n";
       $query.= " FROM ".$table."\n";
       $query.= " WHERE ResourceID = '".$deviceid."'"."\n";
 
+      $result = $PluginSccmSccmdb->exec_query($query);
+      while($data = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+         foreach($data as $key => $value){
+            $data[$key] = $this->cleanValue($value);
+         }
+         $datas[]=$data;
+      }
+
+      $PluginSccmSccmdb->disconnect();
+
+      return $datas;
+   }
+   
+   function getPhysicalDisks($deviceid) {
+      
+      $PluginSccmSccmdb = new PluginSccmSccmdb();
+      $PluginSccmSccmdb->connect();
+
+      $datas = array();
+      
+      $query = "SELECT Description0, DeviceID0, FileSystem0, FreeSpace0, Size0, VolumeName0";
+      $query.= " FROM v_GS_LOGICAL_DISK";
+      $query.= " WHERE ResourceID = '". $deviceid ."'";
+      
       $result = $PluginSccmSccmdb->exec_query($query);
       while($data = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
          foreach($data as $key => $value){
@@ -293,6 +322,7 @@ class PluginSccmSccm {
             $PluginSccmSccmxml->setUsers();
             $PluginSccmSccmxml->setNetworks();
             $PluginSccmSccmxml->setDrives();
+            $PluginSccmSccmxml->setPhysicalDisks();
 
             $SXML = $PluginSccmSccmxml->sxml;
 
