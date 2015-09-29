@@ -188,7 +188,7 @@ XML;
          $MEM->addChild('CAPACITY',     $value['Capacity0']);
          $MEM->addChild('CAPTION',      $value['DeviceLocator0']);
          $MEM->addChild('DESCRIPTION',  $value['PartNumber0']);
-         $MEM->addChild('MANUFACTURER', "Corsair");
+         $MEM->addChild('MANUFACTURER', $value['Manufacturer0']);
          $MEM->addChild('NUMSLOTS',     $value['GroupID']);
          $MEM->addChild('SERIALNUMBER', $value['SerialNumber0']);
          $MEM->addChild('SPEED',        $value['Speed0']);
@@ -307,7 +307,7 @@ XML;
       $PluginSccmSccm = new PluginSccmSccm();
 
       $CONTENT    = $this->sxml->CONTENT[0]; $i = 0;
-      foreach($PluginSccmSccm->getLogicalDisks($this->device_id) as $value){
+      foreach($PluginSccmSccm->getPhysicalDisks($this->device_id) as $value){
          $CONTENT->addChild('STORAGES');
          $STORAGES = $this->sxml->CONTENT[0]->STORAGES[$i];
          $STORAGES->addChild('DESCRIPTION',  $value['Description0']);

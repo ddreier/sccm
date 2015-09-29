@@ -90,7 +90,7 @@ class PluginSccmSccm {
       LEFT JOIN PC_BIOS_DATA pbd ON csd.MachineID = pbd.MachineID
       LEFT JOIN System_DISC sdi ON csd.MachineID = sdi.ItemKey
       LEFT JOIN System_DATA sd ON csd.MachineID = sd.MachineID
-      INNER JOIN v_R_System VrS ON csd.MachineID = VrS.ResourceID 
+      INNER JOIN v_R_System VrS ON csd.MachineID = VrS.ResourceID WHERE csd.MachineID = 16777275
       ";
 
       if($where!=0) {
@@ -160,8 +160,8 @@ class PluginSccmSccm {
 
       $datas = array();
       
-      $query = "SELECT Description0, DeviceID0, FileSystem0, FreeSpace0, Size0, VolumeName0";
-      $query.= " FROM v_GS_LOGICAL_DISK";
+      $query = "SELECT Description0, Size0, InterfaceType0, Manufacturer0, Model0, Name0, SCSIBus0, SCSILogicalUnit0, SCSITargetId0, MediaType0";
+      $query.= " FROM v_GS_DISK";
       $query.= " WHERE ResourceID = '". $deviceid ."'";
       
       $result = $PluginSccmSccmdb->exec_query($query);
@@ -186,7 +186,7 @@ class PluginSccmSccm {
       
       $query = "SELECT Description0, DeviceID0, FileSystem0, FreeSpace0, Size0, VolumeName0";
       $query.= " FROM v_GS_LOGICAL_DISK";
-      $query.= " WHERE ResourceID = '". $deviceid ."'";
+      $query.= " WHERE ResourceID = '". $deviceid ."' AND Description0 = 'Local Fixed Disk'";
       
       $result = $PluginSccmSccmdb->exec_query($query);
       while($data = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
